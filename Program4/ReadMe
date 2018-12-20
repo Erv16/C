@@ -1,0 +1,79 @@
+In this program, I have:
+
+* Worked with files
+* Created and Initialized structs
+
+In this program I have implemented my own tournament program with teams consisting of players. I am reading the players data from a file.
+
+## Part A: Building My League
+
+For Part A, you will need to create your data structs to represent players and teams, as well as free functions to run your tournament.
+
+#### struct Player
+* offensive (`int`)
+* defensive (`int`)
+* number (`int`)
+* team (`int`)
+* first (`char *`)
+* last (`char *`)
+
+All of the player information will be read in from the player.dat file.
+
+#### struct Team
+* name (`char *`)
+    * a string buffer for the team
+* players (`Player *`)
+    * a pointer to an array of players
+* `void (*delete)(Team *)`
+    * a function pointer to a function that takes a Team pointer and returns nothing
+
+#### Free Functions
+Create the following functions:
+* `Player * draftPlayers(char * filename, int team, int num_players)`
+    * The draft players function takes a filename for a file containing players in the following format:
+        ```
+        <team #>,<first name>,<last name>,<player_num>,<offense>,<defense>
+        ```
+        * :bulb: I recommend the c library function `strtok` for parsing each line.
+    * Each player information will be on a separate line
+    * Guaranteed to only have well formed files.
+    * The function should return an array of `num_players` for the given team number
+
+* `Team * newTeam(char * name, Player * players)`
+    * Takes a team name (`char *`) and an array of players.
+    * The function should:
+        * Create a Team struct,
+        * The function should return a pointer to the newly created team (not a copy).
+        * The driver code will use my newTeam() function to create 8, 16, or 32 teams, which will be placed into an array called league[], so I had to make sure my function follows the expected interface.
+
+* `Team * game(Team *, Team *)`
+    * Takes pointers to two teams (`Team *`).
+    * My `game()` function should complete the following:
+        * The algorithm for determining the winner of a game is as follows:
+            * Each team gets at 2 least attempts to score. 
+            * I compare the defensive team's players total defense with a random value between 0 and the offensive team's total offense.
+            * If the final offensive value is greater than the defense, the team has a scored.
+    * Return a pointer to the winner.
+        * If the game is a tie, it should go to sudden death (use whatever algorithm you choose to determine a winner).
+    * Make sure this works correctly before moving on to the next part.
+
+:Note: You will need to typedef your structs to remove the struct keyword in order to run the supplied driver code below.
+
+## Part B:
+
+Once you have your game working and the result is random, create a function:
+
+* `Team * tournament(Team **, int)`
+    * Takes an array of pointers to Team structs and the number of teams.
+        * I verify that the number of teams is a power of 2. If it is not, print a message saying the number of teams is invalid and return a NULL pointer.
+        * :Hint: Use your game function for each round to determine the rounds winners.
+    * Because this is an elimination style tournament, each team should lose only once, while the winner goes on to the next round.
+    * I have created unique matchups (no team plays more than one game per round) for each round between two teams, and discarded the losers.
+        * :warning: MAKE SURE you do not delete the pointers from the league array. This will cause a memory leak.
+    * I have kept track of the winners each round, and matched them up on the next round.
+    * I have not assumed I will only have 8 teams. My code works with any power of 2 (8 | 16 | 32).
+
+Lastly, I have written a function that cleans up memory for each team:
+
+* `void deleteTeam(Team *)`
+    * Takes a team pointer and deletes all memory
