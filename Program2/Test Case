@@ -1,0 +1,7 @@
+Test function with the following hardcoded strings. Do not ask for user input.
+   * haystack="chocolate", needle="choc"
+   * haystack="vanilla", needle="lla"
+   * haystack="caramel", needle="am"
+   * haystack="strawberry", needle="strawberry"
+   * haystack="banana", needle="na"
+   * haystack="cherry", needle="terrible"
