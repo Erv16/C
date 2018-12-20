@@ -1,0 +1,86 @@
+In this program, I have worked with :
+
+* unix system tools, such as Valgrind, make, gdb, and bash
+* inspected my code and verified its validity
+
+Before we start working with the program itself, we will need to create a "makefile". We are going to add several targets to our makefile to help us along the way. The first target will simply compile the provided source code to an executable. A few things to note:
+* I have used separate compilation.
+    * First compile the program3.c and bomb.c files to an object file, then link both with hidden.o. to an executable
+    * The hidden.o file has already been compiled to an object file, so it only needs to be linked.
+* :Note: This must be completed with three separate targets, `program3` and `program3.o`, and `bomb.o`.
+* :Note: compiled with the `-g` flag, otherwise gdb won't work.
+
+## Part A: Fixing Memory Errors with Valgrind
+
+The provided driver, `program3.c`, contains 3 functions riddled with memory errors, including a possible segmentation fault. I have used Valgrind to fix the code and ensured all memory errors are fixed. Instead of running Valgrind directly, let's add another target to our makefile that will run Valgrind for us. To complete Part A, do the following:
+
+* Added a target to my makefile, `memcheck`, that runs program3.c with Valgrind to inspect the memory errors.
+* Fix all memory errors so that Valgrind reports no memory leaks and errors.
+    * The following message signifies all of the errors have been fixed:
+        ```bash
+            All heap blocks were freed -- no leaks are possible
+            ...
+            ERROR SUMMARY: 0 errors from 0 contexts
+        ```
+* **CONSTRAINT**: I can only alter the code in any line in the 3 functions, but I can not simply delete lines of code or change where memory is allocated.
+    * For example, I can alter how much malloc() allocates, but cannot just delete malloc altogether.
+
+## Part B: Defusing the Bomb with GDB
+
+While I was fixing the code in Part A, the nefarious Dr. Evil has planted a "binary bomb" on our machines. A binary bomb is a program that consists of a sequence of phases. Each phase expects you to type a particular string on the standard input (stdin). If you type the correct string, then the phase is defused and the bomb proceeds to the next phase. Otherwise, the bomb explodes by printing "BOOM!!!" and then terminating. The bomb is defused when every phase has been defused. Your mission, which you have no choice but to accept, is to defuse your bomb before the due date.
+
+Once you start execution of the program, you have **_200 seconds_** to defuse the bomb. Using GDB, step through the code, inspecting each passcode as you go. A few things to note:
+* The passcodes are random and will change each time you execute, so you have to learn how to use GDB.
+* Each phaseâ€™s passcode is the same length as the phase, so phase 1 only has a single letter passcode
+
+A file will be produced for each phase you pass (phase1.key, phase2.key, etc). Once you have completed all 6 phases, a final file called `bomb_defused.log` will be generated. Make sure you include all of these files, **_unaltered_**, with your submission.
+
+
+## Part C: Bash Scripting for Fun and Profit
+
+Written a bash script called `bscript.sh` that takes a list of file names as arguments. The first list of files will be used to add content to the last file in the list, then the files will be moved into a directory called `keys`. For example, if you run the command:
+```bash
+./bscript.sh fileA fileB fileC fileD
+```
+The script will add the contents of fileA, fileB, and fileC to fileD, then move fileA, fileB, and fileC into a folder called `keys`
+
+My script performs the following actions:
+* verifies that the file parameters exist
+* If the files exist, the script :
+    * creates a directory named `keys` that is located within the same directory as the script.
+    * moves all but the final file to the `keys` directory
+    * adds the contents of all the files in the `keys` directory to the last file
+* If the given files do not exist, an appropriate error message should be printed and the script should end without doing anything.
+
+You should be able to run your script as such:
+	./bscript.sh <filename1> <filename2> <filename3> ...
+* :Note: I have used the [`chmod`](https://ss64.com/bash/chmod.html) command to mark it as executable
+
+Lastly, added a target, `bscript`, to my makefile that runs my script with the key files generated in Part B. The contents of the key files should be appended to the `bomb_defused.log` file.
+
+### Part D: Makefile
+
+My Makefile has the following targets
+
+* all
+    * all has 3 targets as dependencies: program3, clean, and submit
+
+* program3
+    * Should compile the program3.c and bomb.c to separate object files, then link them with the provided hidden.o to create an executable.
+
+* program3.o
+    * Should compile program3.c to an object file
+
+* bomb.o
+    * Should compile program3.c to an object file
+
+* bscript
+    * first runs my executable code with gdb
+    * runs my bash script written in part C
+
+* memcheck
+    * runs my executable program3 with valgrind
+
+* clean
+    * The clean target removes any executable and object files you created when testing.
+    * Also moves all phase keys back into the main folder and delete the key folder created with your bash script
